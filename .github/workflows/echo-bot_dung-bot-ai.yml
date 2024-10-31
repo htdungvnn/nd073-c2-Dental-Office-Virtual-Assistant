@@ -21,6 +21,9 @@ jobs:
         with:
           node-version: '20.x'
 
+      - name: Fix vulnerabilities
+        run: npm audit fix
+
       - name: npm install, build, and test
         run: |
           npm install
