@@ -1,55 +1,73 @@
-# README Template
+# echo-bot
 
-Below is a template provided for use when building your README file for students.
+Bot Framework v4 echo bot sample
 
-# Project Title
+This bot has been created using [Bot Framework](https://dev.botframework.com), it shows how to create a simple bot that accepts input from the user and echoes it back.
 
-Project description goes here.
+## Prerequisites
 
-## Getting Started
+- [Node.js](https://nodejs.org) version 18 or higher
 
-Instructions for how to get a copy of the project running on your local machine.
+    ```bash
+    # determine node version
+    node --version
+    ```
 
-### Dependencies
+## To try this sample
 
-```
-Examples here
-```
+- Clone the repository
 
-### Installation
+    ```bash
+    git clone https://github.com/microsoft/botbuilder-samples.git
+    ```
 
-Step by step explanation of how to get a dev environment running.
+- In a terminal, navigate to `samples/javascript_nodejs/02.echo-bot`
 
-List out the steps
+    ```bash
+    cd samples/javascript_nodejs/02.echo-bot
+    ```
 
-```
-Give an example here
-```
+- Install modules
 
-## Testing
+    ```bash
+    npm install
+    ```
 
-Explain the steps needed to run any automated tests
+- Start the bot
 
-### Break Down Tests
+    ```bash
+    npm start
+    ```
 
-Explain what each test does and why
+## Testing the bot using Bot Framework Emulator
 
-```
-Examples here
-```
+[Bot Framework Emulator](https://github.com/microsoft/botframework-emulator) is a desktop application that allows bot developers to test and debug their bots on localhost or running remotely through a tunnel.
 
-## Project Instructions
+- Install the latest Bot Framework Emulator from [here](https://github.com/Microsoft/BotFramework-Emulator/releases)
 
-This section should contain all the student deliverables for this project.
+### Connect to the bot using Bot Framework Emulator
 
-## Built With
+- Launch Bot Framework Emulator
+- File -> Open Bot
+- Enter a Bot URL of `http://localhost:3978/api/messages`
 
-* [Item1](www.item1.com) - Description of item
-* [Item2](www.item2.com) - Description of item
-* [Item3](www.item3.com) - Description of item
+## Interacting with the bot
 
-Include all items used to build project.
+Enter text in the emulator.  The text will be echoed back by the bot.
 
-## License
+## Deploy the bot to Azure
 
-[License](LICENSE.txt)
+To learn more about deploying a bot to Azure, see [Deploy your bot to Azure](https://aka.ms/azuredeployment) for a complete list of deployment instructions.
+
+## Further reading
+
+- [Bot Framework Documentation](https://docs.botframework.com)
+- [Bot Basics](https://docs.microsoft.com/azure/bot-service/bot-builder-basics?view=azure-bot-service-4.0)
+- [Activity processing](https://docs.microsoft.com/en-us/azure/bot-service/bot-builder-concept-activity-processing?view=azure-bot-service-4.0)
+- [Azure Bot Service Introduction](https://docs.microsoft.com/azure/bot-service/bot-service-overview-introduction?view=azure-bot-service-4.0)
+- [Azure Bot Service Documentation](https://docs.microsoft.com/azure/bot-service/?view=azure-bot-service-4.0)
+- [Azure CLI](https://docs.microsoft.com/cli/azure/?view=azure-cli-latest)
+- [Azure Portal](https://portal.azure.com)
+- [Channels and Bot Connector Service](https://docs.microsoft.com/en-us/azure/bot-service/bot-concepts?view=azure-bot-service-4.0)
+- [Restify](https://www.npmjs.com/package/restify)
+- [dotenv](https://www.npmjs.com/package/dotenv)
