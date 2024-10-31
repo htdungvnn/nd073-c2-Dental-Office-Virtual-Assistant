@@ -19,7 +19,7 @@
         "botbuilder": "~4.23.0",
         "csv-parse": "^5.5.6",
         "dotenv": "^8.2.0",
-        "restify": "^8.0.0"
+        "restify": "^8.1.0"
     },
     "devDependencies": {
         "eslint": "^7.0.0",
