@@ -71,5 +71,5 @@ jobs:
         with:
           app-name: 'dungwebapp'
           slot-name: 'Production'
-          package: ./starter/ContosoDentistryChatBot
+          package: release.zip
           overwrite: true
