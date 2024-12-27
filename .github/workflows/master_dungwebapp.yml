@@ -54,6 +54,9 @@ jobs:
         with:
           name: node-app
 
+      - name: List files after unzip (debug)
+        run: ls -R
+
       - name: Unzip artifact for deployment
         run: unzip release.zip
       
@@ -70,5 +73,5 @@ jobs:
         with:
           app-name: 'dungwebapp'
           slot-name: 'Production'
-          package: ./starter/ContosoDentistryChatBot
+          package: .
           
