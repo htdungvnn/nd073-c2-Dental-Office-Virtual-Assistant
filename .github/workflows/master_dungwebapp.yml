@@ -70,5 +70,5 @@ jobs:
         with:
           app-name: 'dungwebapp'
           slot-name: 'Production'
-          package: .
+          package: ./starter/ContosoDentistryChatBot
           
