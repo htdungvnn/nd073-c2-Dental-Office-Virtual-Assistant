@@ -1,81 +1,72 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+const { ActivityHandler } = require("botbuilder");
+const { LuisRecognizer, QnAMaker } = require("botbuilder-ai");
 
-const { ActivityHandler, ActivityTypes } = require('botbuilder');
-const { CustomQuestionAnswering } = require('botbuilder-ai');
+class DentaBot extends ActivityHandler {
+  constructor(configuration) {
+    super();
 
-class CustomQABot extends ActivityHandler {
-    constructor() {
-        super();
+    // Initialize QnA Maker with the correct configuration
+    this.qnaMaker = new QnAMaker({
+      knowledgeBaseId: process.env.QnAKnowledgebaseId || "",
+      endpointKey: process.env.QnAAuthKey || "",
+      host: process.env.QnAEndpointHostName || "",
+      deploymentName: process.env.QnADeploymentName || "",
+    });
 
-        try {
-            this.qnaMaker = new CustomQuestionAnswering({
-                knowledgeBaseId: process.env.ProjectName,
-                endpointKey: process.env.LanguageEndpointKey,
-                host: process.env.LanguageEndpointHostName
-            });
-        } catch (err) {
-            console.warn(`QnAMaker Exception: ${ err } Check your QnAMaker configuration in .env`);
+    console.log("QnA Maker initialized:", this.qnaMaker);
+
+    // Initialize LUIS Recognizer
+    this.luisRecognizer = new LuisRecognizer(
+      {
+        applicationId: process.env.LuisAppId || "",
+        endpointKey: process.env.LuisAPIKey || "",
+        endpoint: process.env.LuisEndpointHostName || "",
+      },
+      {
+        apiVersion: "v3",
+        includeAllIntents: true,
+        includeInstanceData: true,
+        log: true, // Enable logging
+      }
+    );
+
+    console.log("LUIS Recognizer initialized:", this.luisRecognizer);
+
+    // Send welcome message to new users
+    this.onMembersAdded(async (context, next) => {
+      const membersAdded = context.activity.membersAdded;
+      const welcomeText =
+        "Hello! I am your dental assistant. How can I help you today?";
+      for (let member of membersAdded) {
+        if (member.id !== context.activity.recipient.id) {
+          await context.sendActivity(welcomeText);
         }
+      }
+      await next();
+    });
 
-        // If a new user is added to the conversation, send them a greeting message
-        this.onMembersAdded(async (context, next) => {
-            const membersAdded = context.activity.membersAdded;
-            for (let cnt = 0; cnt < membersAdded.length; cnt++) {
-                if (membersAdded[cnt].id !== context.activity.recipient.id) {
-                    const DefaultWelcomeMessageFromConfig = process.env.DefaultWelcomeMessage;
-                    await context.sendActivity(DefaultWelcomeMessageFromConfig?.length > 0 ? DefaultWelcomeMessageFromConfig : 'Hello and Welcome');
-                }
-            }
+    // Handle message activity
+    this.onMessage(async (context, next) => {
+      const message = context.activity.text;
+      console.log(`Received message: ${message}`);
 
-            // By calling next() you ensure that the next BotHandler is run.
-            await next();
-        });
+      // Process the message with LUIS
+      const luisResult = await this.luisRecognizer.recognize(context);
+      console.log("LUIS result:", luisResult);
 
-        // When a user sends a message, perform a call to the QnA Maker service to retrieve matching Question and Answer pairs.
-        this.onMessage(async (context, next) => {
-            if (!process.env.ProjectName || !process.env.LanguageEndpointKey || !process.env.LanguageEndpointHostName) {
-                const unconfiguredQnaMessage = 'NOTE: \r\n' +
-                    'Custom Question Answering is not configured. To enable all capabilities, add `ProjectName`, `LanguageEndpointKey` and `LanguageEndpointHostName` to the .env file. \r\n' +
-                    'You may visit https://language.cognitive.azure.com/ to create a Custom Question Answering Project.';
+      // Process the message with QnA Maker
+      const qnaResults = await this.qnaMaker.getAnswers(context);
+      if (qnaResults.length > 0) {
+        await context.sendActivity(qnaResults[0].answer);
+      } else {
+        await context.sendActivity(
+          "I'm sorry, I do not have an answer for that."
+        );
+      }
 
-                await context.sendActivity(unconfiguredQnaMessage);
-            } else {
-                console.log('Calling CQA');
-
-                const enablePreciseAnswer = process.env.EnablePreciseAnswer === 'true';
-                const displayPreciseAnswerOnly = process.env.DisplayPreciseAnswerOnly === 'true';
-                const response = await this.qnaMaker.getAnswers(context, { enablePreciseAnswer: enablePreciseAnswer });
-
-                // If an answer was received from CQA, send the answer back to the user.
-                if (response.length > 0) {
-                    var activities = [];
-
-                    var answerText = response[0].answer;
-
-                    // Answer span text has precise answer.
-                    var preciseAnswerText = response[0].answerSpan?.text;
-                    if (!preciseAnswerText) {
-                        activities.push({ type: ActivityTypes.Message, text: answerText });
-                    } else {
-                        activities.push({ type: ActivityTypes.Message, text: preciseAnswerText });
-
-                        if (!displayPreciseAnswerOnly) {
-                            // Add answer to the reply when it is configured.
-                            activities.push({ type: ActivityTypes.Message, text: answerText });
-                        }
-                    }
-                    await context.sendActivities(activities);
-                    // If no answers were returned from QnA Maker, reply with help.
-                } else {
-                    await context.sendActivity('No answers were found.');
-                }
-            }
-
-            // By calling next() you ensure that the next BotHandler is run.
-            await next();
-        });
-    }
+      await next();
+    });
+  }
 }
 
-module.exports.CustomQABot = CustomQABot;
+module.exports.DentaBot = DentaBot;

@@ -1,0 +1,10 @@
+{
+  "configurations": [
+    {
+      "type": "chrome",
+      "name": "http://localhost:3978/api/messages",
+      "request": "launch",
+      "url": "http://localhost:3978/api/messages"
+    }
+  ]
+}
